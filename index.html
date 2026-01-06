@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Habit Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1 class="app-title">Monthly Habit Tracker</h1>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </header>
+
+        <!-- Month Selector -->
+        <div class="controls-bar">
+            <div class="month-selector">
+                <label for="monthSelect">Month Of:</label>
+                <input type="month" id="monthSelect" class="month-input">
+            </div>
+            <div class="tab-navigation">
+                <button id="trackerTab" class="tab-btn active">📊 Tracker</button>
+                <button id="dashboardTab" class="tab-btn">📈 Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Tracker View -->
+        <div id="trackerView" class="view active">
+            <!-- Habit Controls -->
+            <div class="habit-controls">
+                <button id="addHabitBtn" class="btn btn-primary">+ Add Habit</button>
+                <span class="habit-count">Habits: <strong id="habitCountDisplay">0</strong> / 25</span>
+            </div>
+
+            <!-- Tracker Grid -->
+            <div class="tracker-container">
+                <div class="tracker-grid-wrapper">
+                    <table class="tracker-table" id="trackerTable">
+                        <thead>
+                            <tr>
+                                <th class="time-header">Time</th>
+                                <th class="habit-header">Habits</th>
+                                <!-- Day headers will be generated dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody id="trackerBody">
+                            <!-- Habit rows will be generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Daily Progress Box -->
+            <div class="daily-progress">
+                <h3>Today's Progress</h3>
+                <div class="progress-stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Habits</span>
+                        <span class="stat-value" id="totalHabitsToday">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Completed</span>
+                        <span class="stat-value completed" id="completedToday">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Remaining</span>
+                        <span class="stat-value remaining" id="remainingToday">0</span>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view">
+            <div class="dashboard-header">
+                <h2>📊 Analytics Dashboard</h2>
+                <button id="exportPdfBtn" class="btn btn-secondary">📄 Export PDF</button>
+            </div>
+
+            <!-- Overall Monthly Stats -->
+            <div class="stats-section">
+                <h3>Overall Monthly Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card large">
+                        <span class="stat-label">Total Habits</span>
+                        <span class="stat-value" id="statTotalHabits">0</span>
+                    </div>
+                    <div class="stat-card large">
+                        <span class="stat-label">Total Checkmarks ✔</span>
+                        <span class="stat-value" id="statTotalChecks">0</span>
+                    </div>
+                    <div class="stat-card large">
+                        <span class="stat-label">Completion Rate</span>
+                        <span class="stat-value" id="statCompletionRate">0%</span>
+                    </div>
+                    <div class="stat-card large highlight">
+                        <span class="stat-label">Most Completed</span>
+                        <span class="stat-value small" id="statMostCompleted">-</span>
+                    </div>
+                    <div class="stat-card large highlight">
+                        <span class="stat-label">Least Completed</span>
+                        <span class="stat-value small" id="statLeastCompleted">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Habit-wise Analytics Table -->
+            <div class="analytics-section">
+                <h3>Habit-wise Analytics</h3>
+                <div class="analytics-table-wrapper">
+                    <table class="analytics-table" id="analyticsTable">
+                        <thead>
+                            <tr>
+                                <th>Habit</th>
+                                <th>Completion %</th>
+                                <th>Days Completed</th>
+                                <th>Days Missed</th>
+                                <th>Current Streak</th>
+                                <th>Longest Streak</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analyticsBody">
+                            <!-- Analytics rows will be generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <h3>Visual Analytics</h3>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h4>Daily Completion Trend</h4>
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h4>Habit Completion Rates</h4>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h4>Overall Progress</h4>
+                        <canvas id="donutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Habit Modal -->
+    <div id="habitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Habit</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="habitNameInput">Habit Name:</label>
+                <input type="text" id="habitNameInput" class="modal-input" placeholder="e.g., Morning walk, Drink water"
+                    maxlength="50">
+
+                <label for="habitTimeInput" style="margin-top: 15px;">Time Allocation (optional):</label>
+                <input type="text" id="habitTimeInput" class="modal-input" placeholder="e.g., 30 min, 1 h, 45m"
+                    maxlength="20">
+            </div>
+            <div class="modal-footer">
+                <button id="cancelHabitBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveHabitBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Main Script -->
+    <script src="script.js"></script>
+</body>
+
+</html>
